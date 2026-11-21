@@ -1,11 +1,26 @@
+-- UZG - World Scale Zombie Animation
+-- Version: Zombie Body v3
 
--- UZG - World Scale Sprite Animation
+--------------------------------------------------
+-- CONFIGURATION
+--------------------------------------------------
 
 local FRAME_DURATION = 0.18
 
--- Dimensions based on the zombie collider
-local SPRITE_WIDTH = 12
-local SPRITE_HEIGHT = 16
+-- Physical zombie body dimensions
+local COLLIDER_HEIGHT = 3.2
+local HIP_HEIGHT = 2.0
+
+-- Visual sprite dimensions
+local SPRITE_WORLD_WIDTH = 9.6
+local SPRITE_WORLD_HEIGHT = 12.8
+
+-- Animation settings
+local MOVEMENT_THRESHOLD = 0.45
+
+-- Rendering settings
+local MIN_VIEW_DISTANCE = 1.5
+local MAX_SCREEN_HEIGHT_FACTOR = 1.4
 
 local SPRITE_FRAMES = {
     "sprites/Zombie/Zombie_01.png",
@@ -13,29 +28,71 @@ local SPRITE_FRAMES = {
     "sprites/Zombie/Zombie_03.png"
 }
 
--- Create billboard
+--------------------------------------------------
+-- CREATE BILLBOARD
+--------------------------------------------------
+
 local billboard = Instance.new("BillboardGui")
+
 billboard.Name = "ZombieBillboard"
 billboard.Parent = self
 
--- Create sprite
+local billboardSettings = billboard.BillboardGui
+
+-- Position the billboard so the sprite's bottom
+-- aligns approximately with the physical ground.
+local verticalOffset =
+    (SPRITE_WORLD_HEIGHT * 0.5)
+    - (COLLIDER_HEIGHT * 0.5)
+    - HIP_HEIGHT
+
+billboardSettings.unitsOffset = Vector3.new(
+    0,
+    verticalOffset,
+    0
+)
+
+billboardSettings.alwaysOnTop = false
+
+-- Initial dimensions
+billboardSettings.width = 1
+billboardSettings.height = 1
+
+--------------------------------------------------
+-- CREATE SPRITE
+--------------------------------------------------
+
 local sprite = Instance.new("ImageLabel")
+
 sprite.Name = "ZombieSprite"
+
+sprite.AnchorPoint = Vector2.new(0.5, 1)
+sprite.Position = UDim2.new(0.5, 0, 1, 0)
 sprite.Size = UDim2.new(1, 0, 1, 0)
+
 sprite.BackgroundTransparency = 1
 sprite.ResampleMode = "Pixelated"
 sprite.ScaleType = "Fit"
+
 sprite.Image = SPRITE_FRAMES[1]
+
 sprite.Parent = billboard
 
--- Animation state
+--------------------------------------------------
+-- ANIMATION STATE
+--------------------------------------------------
+
 local currentFrame = 1
 local animationTimer = 0
 
--- Update sprite scale and animation
-function Update(dt: number)
+local previousPosition = self.Position
 
-    -- Get camera references
+--------------------------------------------------
+-- UPDATE BILLBOARD SIZE
+--------------------------------------------------
+
+local function UpdateBillboardSize()
+
     local camera = game.World.Camera
     local screen = game.World.Screen
 
@@ -43,25 +100,92 @@ function Update(dt: number)
         return
     end
 
-    -- Calculate distance from camera to zombie
-    local distance = (camera.Position - self.Position).Magnitude
-    distance = math.max(distance, 0.1)
-
-    -- Calculate screen scale
-    local viewportHeight = screen.AbsoluteSize.Y
+    local viewportHeight = screen.AbsoluteSize.y
     local fov = camera.CameraLens.fovY
 
+    if viewportHeight <= 0 or fov <= 0 then
+        return
+    end
+
+    -- Calculate camera-to-zombie distance
+    local distance = (
+        camera.Position - self.Position
+    ).Magnitude
+
+    distance = math.max(
+        distance,
+        MIN_VIEW_DISTANCE
+    )
+
+    -- Convert world dimensions into screen points
     local pixelsPerUnit =
-        viewportHeight / (2 * distance * math.tan(fov / 2))
+        viewportHeight /
+        (2 * distance * math.tan(fov * 0.5))
 
-    -- Resize billboard to match collider proportions
-    billboard.BillboardGui.height = SPRITE_HEIGHT * pixelsPerUnit
-    billboard.BillboardGui.width = SPRITE_WIDTH * pixelsPerUnit
+    local projectedHeight =
+        SPRITE_WORLD_HEIGHT * pixelsPerUnit
 
-    -- Animate sprite
+    -- Prevent extreme sizes at very close distances
+    projectedHeight = math.min(
+        projectedHeight,
+        viewportHeight * MAX_SCREEN_HEIGHT_FACTOR
+    )
+
+    projectedHeight = math.max(
+        projectedHeight,
+        1
+    )
+
+    local projectedWidth =
+        projectedHeight *
+        (SPRITE_WORLD_WIDTH / SPRITE_WORLD_HEIGHT)
+
+    billboardSettings.height = projectedHeight
+    billboardSettings.width = projectedWidth
+
+end
+
+--------------------------------------------------
+-- UPDATE WALK ANIMATION
+--------------------------------------------------
+
+local function UpdateAnimation(dt)
+
+    local currentPosition = self.Position
+
+    local movementSpeed = 0
+
+    if dt > 0 then
+
+        movementSpeed =
+            (currentPosition - previousPosition).Magnitude / dt
+
+    end
+
+    previousPosition = currentPosition
+
+    local isMoving =
+        movementSpeed > MOVEMENT_THRESHOLD
+
+    if not isMoving then
+
+        animationTimer = 0
+
+        if currentFrame ~= 1 then
+
+            currentFrame = 1
+            sprite.Image = SPRITE_FRAMES[1]
+
+        end
+
+        return
+    end
+
+    -- Animate only while moving
     animationTimer += dt
 
-    if animationTimer >= FRAME_DURATION then
+    while animationTimer >= FRAME_DURATION do
+
         animationTimer -= FRAME_DURATION
 
         currentFrame += 1
@@ -71,7 +195,28 @@ function Update(dt: number)
         end
 
         sprite.Image = SPRITE_FRAMES[currentFrame]
+
     end
+
 end
 
-print("[UZG] World-scale zombie sprite initialized!")
+--------------------------------------------------
+-- MAIN UPDATE
+--------------------------------------------------
+
+function Update(dt: number)
+
+    if not self:IsAlive() then
+        return
+    end
+
+    UpdateBillboardSize()
+    UpdateAnimation(dt)
+
+end
+
+--------------------------------------------------
+-- INITIALIZATION
+--------------------------------------------------
+
+print("[UZG] Zombie Body v3 animation initialized!")

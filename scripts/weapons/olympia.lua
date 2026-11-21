@@ -1,4 +1,3 @@
-
 -- UZG - Olympia Configuration
 
 return {
@@ -7,6 +6,10 @@ return {
 
     -- Ammunition
     MaxAmmo = 2,
+
+    -- Combat
+    Damage = 35,
+    Range = 100,
 
     -- Timing (seconds)
     FireInterval = 0.65,

@@ -174,6 +174,12 @@ WeaponShot.OnServerEvent:Connect(function(
         return
     end
 
+    -- Visual impact effect
+    game.Particles.PlayAt(
+        "ParticleEmitter",
+        result.Position
+    )
+
     local hitInstance = result.Instance
 
     if not hitInstance:IsAlive() then
@@ -216,10 +222,11 @@ WeaponShot.OnServerEvent:Connect(function(
 
     if zombie.Health <= 0 then
 
-        print(
-            "[UZG] Zombie killed:",
-            zombie.Name
-        )
+    print(
+        "[UZG] Zombie killed:",
+        zombie.Name
+    )
+
     end
 end)
 

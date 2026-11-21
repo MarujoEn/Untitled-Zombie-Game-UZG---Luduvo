@@ -1,6 +1,6 @@
 {
 	"name":	"Untitled Zombie Game (UZG)",
-	"next_row":	"0000000000000012",
+	"next_row":	"0000000000000013",
 	"assets":	{
 		"2100000000000003":	{
 			"type":	"texture",
@@ -70,6 +70,11 @@
 		"2400000000000011":	{
 			"type":	"script",
 			"path":	"scripts/autorun/UZG_PlayerHealth.server.lua",
+			"checksum":	"fnv1a:3989e23cb0d70beb"
+		},
+		"2400000000000012":	{
+			"type":	"script",
+			"path":	"scripts/autorun/UZG_WeaponService.server.lua",
 			"checksum":	"fnv1a:3989e23cb0d70beb"
 		}
 	}

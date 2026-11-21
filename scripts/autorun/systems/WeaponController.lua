@@ -1,9 +1,13 @@
+
 -- UZG - Generic Weapon Controller
 
 local WeaponController = {}
 WeaponController.__index = WeaponController
 
--- Create a new weapon instance
+--------------------------------------------------
+-- CREATE WEAPON
+--------------------------------------------------
+
 function WeaponController.new(configuration, overlay)
 
     local self = setmetatable({}, WeaponController)
@@ -18,13 +22,21 @@ function WeaponController.new(configuration, overlay)
     self.StateTimer = 0
     self.FireCooldown = 0
 
-    -- Create the weapon interface
+    --------------------------------------------------
+    -- WEAPON INTERFACE
+    --------------------------------------------------
+
     local screen = Instance.new("ScreenGui")
+
     screen.Name = configuration.Id .. "Screen"
     screen.Parent = overlay
 
-    -- Weapon sprite
+    --------------------------------------------------
+    -- WEAPON SPRITE
+    --------------------------------------------------
+
     local sprite = Instance.new("ImageLabel")
+
     sprite.Name = configuration.Id .. "Sprite"
 
     sprite.Size = configuration.Screen.Size
@@ -33,37 +45,118 @@ function WeaponController.new(configuration, overlay)
     sprite.BackgroundTransparency = 1
     sprite.ResampleMode = "Pixelated"
     sprite.ScaleType = "Fit"
+
     sprite.ZIndex = 1
 
     sprite.Image = configuration.Sprites.Idle
     sprite.Parent = screen
 
-    -- Crosshair
-    local crosshair = Instance.new("TextLabel")
+    
+
+    --------------------------------------------------
+    -- CROSSHAIR - INPUT ISOLATED
+    --------------------------------------------------
+
+    local crosshair = Instance.new("Frame")
 
     crosshair.Name = "UZG_Crosshair"
 
     crosshair.Size = UDim2.new(0, 24, 0, 24)
-    crosshair.Position = UDim2.new(0.5, 0, 0.5, 0)
+
+    crosshair.Position = UDim2.new(
+        0.5, 0,
+        0.5, 0
+    )
+
     crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
 
     crosshair.BackgroundTransparency = 1
     crosshair.BorderSizePixel = 0
-
-    crosshair.Text = "+"
-    crosshair.TextSize = 20
-
-    crosshair.TextColor3 = Vector3.new(1, 1, 1)
-
-    crosshair.TextStrokeColor3 = Vector3.new(0, 0, 0)
-    crosshair.TextStrokeTransparency = 0
-    crosshair.TextStrokeWidth = 2
-
-    crosshair.TextXAlignment = "Center"
-    crosshair.TextYAlignment = "Center"
-
     crosshair.ZIndex = 10
+
+    -- Explicitly prevent pointer interaction.
+    crosshair.UIClickable = false
+
+    -- Disable input for the entire crosshair hierarchy.
+    crosshair.Disabled = true
+
+    --------------------------------------------------
+    -- VERTICAL LINE
+    --------------------------------------------------
+
+    local verticalLine = Instance.new("Frame")
+
+    verticalLine.Name = "CrosshairVertical"
+
+    verticalLine.Size = UDim2.new(0, 2, 0, 14)
+
+    verticalLine.Position = UDim2.new(
+        0.5, 0,
+        0.5, 0
+    )
+
+    verticalLine.AnchorPoint = Vector2.new(0.5, 0.5)
+
+    verticalLine.BackgroundColor3 = Vector3.new(1, 1, 1)
+    verticalLine.BackgroundTransparency = 0
+    verticalLine.BorderSizePixel = 0
+    verticalLine.ZIndex = 10
+
+    verticalLine.UIClickable = false
+    verticalLine.Parent = crosshair
+
+    --------------------------------------------------
+    -- HORIZONTAL LINE
+    --------------------------------------------------
+
+    local horizontalLine = Instance.new("Frame")
+
+    horizontalLine.Name = "CrosshairHorizontal"
+
+    horizontalLine.Size = UDim2.new(0, 14, 0, 2)
+
+    horizontalLine.Position = UDim2.new(
+        0.5, 0,
+        0.5, 0
+    )
+
+    horizontalLine.AnchorPoint = Vector2.new(0.5, 0.5)
+
+    horizontalLine.BackgroundColor3 = Vector3.new(1, 1, 1)
+    horizontalLine.BackgroundTransparency = 0
+    horizontalLine.BorderSizePixel = 0
+    horizontalLine.ZIndex = 10
+
+    horizontalLine.UIClickable = false
+    horizontalLine.Parent = crosshair
+
+    --------------------------------------------------
+    -- DISPLAY CROSSHAIR
+    --------------------------------------------------
+
     crosshair.Parent = screen
+
+    self.Crosshair = crosshair
+
+    print(
+        "[UZG] Crosshair initialized:",
+        "UIClickable:", crosshair.UIClickable,
+        "Disabled:", crosshair.Disabled
+    )
+
+
+    self.Crosshair = crosshair
+
+    print(
+        "[UZG] Crosshair initialized:",
+        "UIClickable:",
+        crosshair:HasComponent("UIClickable")
+    )
+
+
+    --------------------------------------------------
+    -- STORE REFERENCES
+    --------------------------------------------------
 
     self.Screen = screen
     self.Sprite = sprite
@@ -74,7 +167,10 @@ function WeaponController.new(configuration, overlay)
     return self
 end
 
--- Change the displayed weapon animation
+--------------------------------------------------
+-- CHANGE WEAPON ANIMATION
+--------------------------------------------------
+
 function WeaponController:SetAnimation(animation)
 
     local image = self.Config.Sprites[animation]
@@ -83,9 +179,13 @@ function WeaponController:SetAnimation(animation)
         self.Sprite.Image = image
         self.State = animation
     end
+
 end
 
--- Attempt to fire the weapon
+--------------------------------------------------
+-- SHOOT
+--------------------------------------------------
+
 function WeaponController:TryShoot()
 
     if self.State ~= "Idle" then
@@ -118,7 +218,10 @@ function WeaponController:TryShoot()
     return true
 end
 
--- Attempt to reload the weapon
+--------------------------------------------------
+-- RELOAD
+--------------------------------------------------
+
 function WeaponController:TryReload()
 
     if self.State ~= "Idle" then
@@ -138,7 +241,10 @@ function WeaponController:TryReload()
     return true
 end
 
--- Update weapon timers and animations
+--------------------------------------------------
+-- UPDATE
+--------------------------------------------------
+
 function WeaponController:Update(dt)
 
     -- Update fire cooldown
@@ -147,7 +253,7 @@ function WeaponController:Update(dt)
         self.FireCooldown - dt
     )
 
-    -- No active animation to update
+    -- No active animation
     if self.State == "Idle" then
         return
     end
@@ -167,10 +273,13 @@ function WeaponController:Update(dt)
                 "/",
                 self.Config.MaxAmmo
             )
+
         end
 
         self:SetAnimation("Idle")
+
     end
+
 end
 
 return WeaponController
