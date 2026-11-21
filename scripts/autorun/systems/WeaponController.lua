@@ -1,4 +1,3 @@
-
 -- UZG - Generic Weapon Controller
 
 local WeaponController = {}
@@ -24,6 +23,7 @@ function WeaponController.new(configuration, overlay)
     screen.Name = configuration.Id .. "Screen"
     screen.Parent = overlay
 
+    -- Weapon sprite
     local sprite = Instance.new("ImageLabel")
     sprite.Name = configuration.Id .. "Sprite"
 
@@ -33,12 +33,41 @@ function WeaponController.new(configuration, overlay)
     sprite.BackgroundTransparency = 1
     sprite.ResampleMode = "Pixelated"
     sprite.ScaleType = "Fit"
+    sprite.ZIndex = 1
 
     sprite.Image = configuration.Sprites.Idle
     sprite.Parent = screen
 
+    -- Crosshair
+    local crosshair = Instance.new("TextLabel")
+
+    crosshair.Name = "UZG_Crosshair"
+
+    crosshair.Size = UDim2.new(0, 24, 0, 24)
+    crosshair.Position = UDim2.new(0.5, 0, 0.5, 0)
+    crosshair.AnchorPoint = Vector2.new(0.5, 0.5)
+
+    crosshair.BackgroundTransparency = 1
+    crosshair.BorderSizePixel = 0
+
+    crosshair.Text = "+"
+    crosshair.TextSize = 20
+
+    crosshair.TextColor3 = Vector3.new(1, 1, 1)
+
+    crosshair.TextStrokeColor3 = Vector3.new(0, 0, 0)
+    crosshair.TextStrokeTransparency = 0
+    crosshair.TextStrokeWidth = 2
+
+    crosshair.TextXAlignment = "Center"
+    crosshair.TextYAlignment = "Center"
+
+    crosshair.ZIndex = 10
+    crosshair.Parent = screen
+
     self.Screen = screen
     self.Sprite = sprite
+    self.Crosshair = crosshair
 
     print("[UZG] Weapon created:", configuration.DisplayName)
 
