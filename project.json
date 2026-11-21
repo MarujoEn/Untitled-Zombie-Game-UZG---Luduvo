@@ -1,0 +1,76 @@
+{
+	"name":	"Untitled Zombie Game (UZG)",
+	"next_row":	"0000000000000012",
+	"assets":	{
+		"2100000000000003":	{
+			"type":	"texture",
+			"path":	"sprites/Zombie/Zombie_01.png",
+			"checksum":	"fnv1a:097d776edf4bb39d"
+		},
+		"2100000000000004":	{
+			"type":	"texture",
+			"path":	"sprites/Zombie/Zombie_02.png",
+			"checksum":	"fnv1a:292b8a051c6bd471"
+		},
+		"2100000000000005":	{
+			"type":	"texture",
+			"path":	"sprites/Zombie/Zombie_03.png",
+			"checksum":	"fnv1a:b0a6dd6216745137"
+		},
+		"2100000000000006":	{
+			"type":	"texture",
+			"path":	"sprites/Zombie/Zombie_Sheet.png",
+			"checksum":	"fnv1a:496bdcced79e37f2"
+		},
+		"2100000000000007":	{
+			"type":	"texture",
+			"path":	"sprites/Olympia/Olympia_Idle.png",
+			"checksum":	"fnv1a:13455fcda43e16fa"
+		},
+		"2100000000000008":	{
+			"type":	"texture",
+			"path":	"sprites/Olympia/Olympia_Reload.png",
+			"checksum":	"fnv1a:9ee62b78614e87e2"
+		},
+		"2100000000000009":	{
+			"type":	"texture",
+			"path":	"sprites/Olympia/Olympia_Shoot.png",
+			"checksum":	"fnv1a:b2df96a3ec015fe6"
+		},
+		"2400000000000001":	{
+			"type":	"script",
+			"path":	"scripts/Zombie_Collision.server.lua",
+			"checksum":	"fnv1a:79cc9c36fd9b6d4d"
+		},
+		"2400000000000002":	{
+			"type":	"script",
+			"path":	"scripts/Zombie_Animation.client.lua",
+			"checksum":	"fnv1a:b3c608e731edece2"
+		},
+		"240000000000000b":	{
+			"type":	"script",
+			"path":	"scripts/autorun/UZG_Player.client.lua",
+			"checksum":	"fnv1a:3989e23cb0d70beb"
+		},
+		"240000000000000e":	{
+			"type":	"script",
+			"path":	"scripts/weapons/olympia.lua",
+			"checksum":	"fnv1a:cbf29ce484222325"
+		},
+		"240000000000000f":	{
+			"type":	"script",
+			"path":	"scripts/autorun/systems/WeaponController.lua",
+			"checksum":	"fnv1a:cbf29ce484222325"
+		},
+		"2400000000000010":	{
+			"type":	"script",
+			"path":	"scripts/autorun/UZG_Weapon.client.lua",
+			"checksum":	"fnv1a:3989e23cb0d70beb"
+		},
+		"2400000000000011":	{
+			"type":	"script",
+			"path":	"scripts/autorun/UZG_PlayerHealth.server.lua",
+			"checksum":	"fnv1a:3989e23cb0d70beb"
+		}
+	}
+}
